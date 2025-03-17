@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -13,6 +14,7 @@ public class ChunkRenderer : MonoBehaviour
 
 
     private readonly List<Vector3> _verticesMesh = new();
+    private readonly List<Vector2> _uvs = new();
     private readonly List<int> _trianglesMesh = new();
 
     void Start()
@@ -29,6 +31,7 @@ public class ChunkRenderer : MonoBehaviour
     {
         _verticesMesh.Clear();
         _trianglesMesh.Clear();
+        _uvs.Clear();
 
         for (int y = 0; y < CHUNK_HEIGHT; ++y)
             for (int x = 0; x < CHUNK_WIDTH; ++x)
@@ -37,6 +40,7 @@ public class ChunkRenderer : MonoBehaviour
 
         _chunkMesh.vertices = _verticesMesh.ToArray();
         _chunkMesh.triangles = _trianglesMesh.ToArray();
+        _chunkMesh.uv = _uvs.ToArray();
 
         _chunkMesh.Optimize();
         _chunkMesh.RecalculateBounds();
@@ -46,15 +50,35 @@ public class ChunkRenderer : MonoBehaviour
     private void GenerateBlockAt(int x, int y, int z)
     {
         Vector3Int blockPos = new(x, y, z);
+        BlockType blockType = GetBlockAt(blockPos);
 
-        if (GetBlockAt(blockPos) == BlockType.Air) return;
+        if (blockType.Equals(BlockType.Air)) return;
 
-        if (GetBlockAt(blockPos + Vector3Int.right).Equals(BlockType.Air))   GetRightSide(blockPos);
-        if (GetBlockAt(blockPos + Vector3Int.left).Equals(BlockType.Air))    GetLeftSide(blockPos);
-        if (GetBlockAt(blockPos + Vector3Int.forward).Equals(BlockType.Air)) GetFrontSide(blockPos);
-        if (GetBlockAt(blockPos + Vector3Int.back).Equals(BlockType.Air))    GetBackSide(blockPos);
-        if (GetBlockAt(blockPos + Vector3Int.up).Equals(BlockType.Air))      GetTopSide(blockPos);
-        if (GetBlockAt(blockPos + Vector3Int.down).Equals(BlockType.Air))    GetBottomSide(blockPos);
+        if (GetBlockAt(blockPos + Vector3Int.right).Equals(BlockType.Air)){
+            GetRightSide(blockPos);
+            SetMaterial(blockType);
+        }
+        if (GetBlockAt(blockPos + Vector3Int.left).Equals(BlockType.Air)){
+            GetLeftSide(blockPos);
+            SetMaterial(blockType);
+        }    
+        if (GetBlockAt(blockPos + Vector3Int.forward).Equals(BlockType.Air)){
+            GetFrontSide(blockPos);
+            SetMaterial(blockType);
+        }
+        if (GetBlockAt(blockPos + Vector3Int.back).Equals(BlockType.Air)){
+            GetBackSide(blockPos);
+            SetMaterial(blockType);
+        }    
+        if (GetBlockAt(blockPos + Vector3Int.up).Equals(BlockType.Air)){
+            GetTopSide(blockPos);
+            SetMaterial(blockType);
+        }      
+        if (GetBlockAt(blockPos + Vector3Int.down).Equals(BlockType.Air)){
+            GetBottomSide(blockPos);
+            SetMaterial(blockType);
+        }    
+
     }
 
     private BlockType GetBlockAt(Vector3Int coords)
@@ -181,6 +205,8 @@ public class ChunkRenderer : MonoBehaviour
 
     private void AddLast_verticesMeshSquare()
     {
+
+
         _trianglesMesh.Add(_verticesMesh.Count - 4);
         _trianglesMesh.Add(_verticesMesh.Count - 3);
         _trianglesMesh.Add(_verticesMesh.Count - 2);
@@ -190,8 +216,19 @@ public class ChunkRenderer : MonoBehaviour
         _trianglesMesh.Add(_verticesMesh.Count - 2);
     }
 
-    private void SetMaterial()
+    private void SetMaterial(BlockType blockType)
     {
+        var uv = blockType switch
+        {
+            BlockType.Grass => new Vector2(0, 0.5f),
+            BlockType.Stone => new Vector2(0, 0),
+            _ => new Vector2(0, 0),
+        };
+
+        float materialWidth = 0.5f;
+        for (int i = 0; i < 2; ++i)
+            for (int j = 0; j < 2; ++j)
+                _uvs.Add(new Vector2(i * materialWidth, j * materialWidth) + uv);
 
     }
 }

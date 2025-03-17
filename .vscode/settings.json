@@ -52,5 +52,5 @@
         "Temp/": true
     },
     "dotnet.preferCSharpExtension": true,
-    "dotnet.defaultSolution": "Minecraft PG.sln"
+    "dotnet.defaultSolution": "Procedural_Generation.sln"
 }

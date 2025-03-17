@@ -48,10 +48,9 @@ public class TerrainGenerator : MonoBehaviour
 
         for (int x = 0; x < ChunkRenderer.CHUNK_WIDTH; ++x){
             for (int z = 0; z < ChunkRenderer.CHUNK_WIDTH; ++z) {
-                //float height = Mathf.PerlinNoise((x / 8f + xOffset ) * .2f, (z/8f + zOffset) * .2f) * 5 + 10;
-                float height = GetHeight(x / 16f + xOffset, z / 16f + zOffset);
+                float height = GetHeight(x + xOffset, z + zOffset);
                 for (int y = 0; y < height; ++y){
-                    result[x, y, z] = BlockType.Dirt;
+                    result[x, y, z] = BlockType.Grass;
                 }
             }
         }
