@@ -18,6 +18,8 @@ public class GameWorld : MonoBehaviour
     void Start(){
         _mainCamera = Camera.main;
 
+        Generator.Init();
+
         StartCoroutine(Generate(false));
     }
 
@@ -56,6 +58,7 @@ public class GameWorld : MonoBehaviour
     public void Regenerate()
     {
         Generator.Init();
+        
         foreach (var chunkData in ChunkDatas)
             Destroy(chunkData.Value.Renderer.gameObject);
 

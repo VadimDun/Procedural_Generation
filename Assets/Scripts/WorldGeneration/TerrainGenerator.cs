@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // On GameWorld
-public class TerrainGenerator : MonoBehaviour
+
+[CreateAssetMenu(menuName = "Terrain generator")]
+public class TerrainGenerator : ScriptableObject
 {
     public float BaseHeight = 8;
 
@@ -22,10 +24,6 @@ public class TerrainGenerator : MonoBehaviour
     private FastNoiseLite[] _octaveNoises;
     private FastNoiseLite _warpNoise;
 
-
-    private void Awake() {
-        Init();
-    }
 
     public void Init()
     {
@@ -48,10 +46,16 @@ public class TerrainGenerator : MonoBehaviour
 
         for (int x = 0; x < ChunkRenderer.CHUNK_WIDTH; ++x){
             for (int z = 0; z < ChunkRenderer.CHUNK_WIDTH; ++z) {
-                //float height = Mathf.PerlinNoise((x / 8f + xOffset ) * .2f, (z/8f + zOffset) * .2f) * 5 + 10;
-                float height = GetHeight(x / 16f + xOffset, z / 16f + zOffset);
+                float height = GetHeight(x + xOffset, z + zOffset);
+
+                float grassHeight = 1;
                 for (int y = 0; y < height; ++y){
-                    result[x, y, z] = BlockType.Dirt;
+                    if (height - y < grassHeight){
+                        result[x, y, z] = BlockType.Grass;
+                    }
+                    else{
+                        result[x, y, z] = BlockType.Stone;
+                    }
                 }
             }
         }
