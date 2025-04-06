@@ -1,12 +1,14 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using Palmmedia.ReportGenerator.Core;
+using Unity.VisualScripting;
 using UnityEngine;
 
 // On GameWorld
 public class GameWorld : MonoBehaviour
 {
-    private const int VIEW_RADIUS = 5;
+    [SerializeField] private int VIEW_RADIUS = 5;
+    [SerializeField] private int DELETING_RADIUS = 8;
     public Dictionary<Vector2Int, ChunkData> ChunkDatas = new();
     public ChunkRenderer ChunkPrefab;
     public TerrainGenerator Generator;
@@ -14,29 +16,85 @@ public class GameWorld : MonoBehaviour
     private Camera _mainCamera;
     [SerializeField] private Vector2Int _currentPlayerChunk;
 
-
-    void Start(){
+    void Start()
+    {
         _mainCamera = Camera.main;
-
         Generator.Init();
-
         StartCoroutine(Generate(false));
     }
 
-    private IEnumerator Generate(bool wait){
-        for (int x = _currentPlayerChunk.x - VIEW_RADIUS; x < _currentPlayerChunk.x + VIEW_RADIUS; ++x){
-            for (int y = _currentPlayerChunk.y - VIEW_RADIUS; y < _currentPlayerChunk.y + VIEW_RADIUS; ++y){
+    private IEnumerator Generate(bool wait)
+    {
+        for (int x = _currentPlayerChunk.x - VIEW_RADIUS; x <= _currentPlayerChunk.x + VIEW_RADIUS; ++x)
+        {
+            for (int y = _currentPlayerChunk.y - VIEW_RADIUS; y <= _currentPlayerChunk.y + VIEW_RADIUS; ++y)
+            {
                 var chunkPosition = new Vector2Int(x, y);
                 if (ChunkDatas.ContainsKey(chunkPosition)) continue;
 
                 LoadChunkAt(chunkPosition);
+                RebuildNeighborChunks(chunkPosition);
 
-                if (wait) yield return new WaitForSecondsRealtime(0.2f);
+                if (wait) yield return new WaitForSecondsRealtime(.1f);
+            }
+        }
+
+        RemoveDistantChunks();
+    }
+
+    private void RebuildNeighborChunks(Vector2Int chunkPosition)
+    {
+        Vector2Int[] neighborDirections = new Vector2Int[]
+        {
+            new(1, 0),
+            new(-1, 0),
+            new(0, 1),
+            new(0, -1)
+        };
+
+        foreach (var dir in neighborDirections)
+        {
+            Vector2Int neighborPos = chunkPosition + dir;
+            if (ChunkDatas.TryGetValue(neighborPos, out ChunkData neighborChunk))
+            {
+                if (neighborChunk.Renderer != null)
+                {
+                    neighborChunk.Renderer.RebuildMesh();
+                }
             }
         }
     }
 
-    private void LoadChunkAt(Vector2Int chunkCoords){
+    private void RemoveDistantChunks()
+    {
+        List<Vector2Int> chunksToRemove = new();
+
+        foreach (var chunkData in ChunkDatas)
+        {
+            var dist = _currentPlayerChunk - chunkData.Key;
+
+            if (Math.Abs(dist.x) > DELETING_RADIUS || Math.Abs(dist.y) > DELETING_RADIUS)
+            {
+                chunksToRemove.Add(chunkData.Key);
+            }
+        }
+
+        foreach (var chunkPos in chunksToRemove)
+        {
+            if (ChunkDatas.TryGetValue(chunkPos, out ChunkData chunkData))
+            {
+                if (chunkData.Renderer != null)
+                {
+                    Destroy(chunkData.Renderer.gameObject);
+                }
+                ChunkDatas.Remove(chunkPos);
+                RebuildNeighborChunks(chunkPos);
+            }
+        }
+    }
+
+    private void LoadChunkAt(Vector2Int chunkCoords)
+    {
         float xPosWorld = chunkCoords.x * ChunkRenderer.CHUNK_WIDTH;
         float zPosWorld = chunkCoords.y * ChunkRenderer.CHUNK_WIDTH;
 
@@ -58,7 +116,7 @@ public class GameWorld : MonoBehaviour
     public void Regenerate()
     {
         Generator.Init();
-        
+
         foreach (var chunkData in ChunkDatas)
             Destroy(chunkData.Value.Renderer.gameObject);
 
@@ -67,21 +125,23 @@ public class GameWorld : MonoBehaviour
         StartCoroutine(Generate(false));
     }
 
-    private void Update() {
+    private void Update()
+    {
         Vector3Int playerWorldPos = Vector3Int.FloorToInt(_mainCamera.transform.position);
         Vector2Int playerChunk = GetChunkAt(playerWorldPos);
-        if (playerChunk != _currentPlayerChunk){
+        if (playerChunk != _currentPlayerChunk)
+        {
             _currentPlayerChunk = playerChunk;
             StartCoroutine(Generate(true));
-
         }
     }
 
-    public Vector2Int GetChunkAt(Vector3Int blockWorldPos){
-        Vector2Int chunkPosition = new (blockWorldPos.x / ChunkRenderer.CHUNK_WIDTH, blockWorldPos.z / ChunkRenderer.CHUNK_WIDTH);
+    public Vector2Int GetChunkAt(Vector3Int blockWorldPos)
+    {
+        Vector2Int chunkPosition = new(blockWorldPos.x / ChunkRenderer.CHUNK_WIDTH, blockWorldPos.z / ChunkRenderer.CHUNK_WIDTH);
 
-        if (blockWorldPos.x < 0) chunkPosition.x++;
-        if (blockWorldPos.y < 0) chunkPosition.y++;
+        if (blockWorldPos.x < 0) chunkPosition.x--;
+        if (blockWorldPos.z < 0) chunkPosition.y--;
         return chunkPosition;
     }
 }

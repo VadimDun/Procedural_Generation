@@ -46,9 +46,9 @@ public class TerrainGenerator : ScriptableObject
 
         for (int x = 0; x < ChunkRenderer.CHUNK_WIDTH; ++x){
             for (int z = 0; z < ChunkRenderer.CHUNK_WIDTH; ++z) {
-                float height = GetHeight(x + xOffset, z + zOffset);
+                float height = 25 + GetHeight(x + xOffset, z + zOffset);
 
-                float grassHeight = 1;
+                float grassHeight = 2;
                 for (int y = 0; y < height; ++y){
                     if (height - y < grassHeight){
                         result[x, y, z] = BlockType.Grass;

@@ -19,10 +19,14 @@ public class ChunkRenderer : MonoBehaviour
 
     void Start()
     {
-        _chunkMesh = new();
+        RebuildMesh();
+    }
+
+    public void RebuildMesh()
+    {
+        _chunkMesh = new Mesh();
 
         CreateChunkMesh();
-
         GetComponent<MeshFilter>().mesh = _chunkMesh;
         GetComponent<MeshCollider>().sharedMesh = _chunkMesh;
     }
@@ -74,7 +78,7 @@ public class ChunkRenderer : MonoBehaviour
             GetTopSide(blockPos);
             SetMaterial(blockType);
         }      
-        if (GetBlockAt(blockPos + Vector3Int.down).Equals(BlockType.Air)){
+        if (blockPos.y > 0 && GetBlockAt(blockPos + Vector3Int.down).Equals(BlockType.Air)){
             GetBottomSide(blockPos);
             SetMaterial(blockType);
         }    

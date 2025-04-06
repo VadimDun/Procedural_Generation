@@ -541,6 +541,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60a1c9f0b6bbd8449a6c9c40fe2df1eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  VIEW_RADIUS: 10
   ChunkPrefab: {fileID: 5577456208843452532, guid: 8e758a8bfa8871545be6dfa89a62b5d1, type: 3}
   Generator: {fileID: 11400000, guid: 7dc2ecdb791022548b97a196e3d9537a, type: 2}
   _currentPlayerChunk: {x: 0, y: 0}
