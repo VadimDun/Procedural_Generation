@@ -46,7 +46,9 @@ public class TerrainGenerator : ScriptableObject
 
         for (int x = 0; x < ChunkRenderer.CHUNK_WIDTH; ++x){
             for (int z = 0; z < ChunkRenderer.CHUNK_WIDTH; ++z) {
-                float height = 25 + GetHeight(x + xOffset, z + zOffset);
+                float xWorld = xOffset + x;
+                float zWorld = zOffset + z;
+                float height = 25 + GetHeight(xWorld, zWorld);
 
                 float grassHeight = 2;
                 for (int y = 0; y < height; ++y){
@@ -56,6 +58,12 @@ public class TerrainGenerator : ScriptableObject
                     else{
                         result[x, y, z] = BlockType.Stone;
                     }
+
+                    FastNoise noise = new();
+                    float caveNoise1 = noise.GetPerlinFractal(xWorld * 5f, y * 10f, zWorld * 5f);
+                    float caveMask = noise.GetSimplex(xWorld * .3f, zWorld * .3f) + .3f;
+                    if (caveNoise1 > Mathf.Max(caveMask, .2f))
+                        result[x, y, z] = BlockType.Air;
                 }
             }
         }
