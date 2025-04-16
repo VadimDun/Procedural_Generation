@@ -4,11 +4,12 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Cave Generator")]
 public class CaveGenerator : ScriptableObject
 {
+    [Range(0f, 1f)] public float caveHeightLimit = 0.5f;
     [Header("Main Cave Settings")]
     public FastNoiseLite.NoiseType caveNoiseType = FastNoiseLite.NoiseType.Perlin;
-    public float caveFrequency = 0.05f;
-    public float caveMultiplierXZ = 5f;
-    public float caveMultiplierY = 10f;
+    public float caveFrequency = 0.025f;
+    public float caveMultiplierXZ = 3f;
+    public float caveMultiplierY = 5f;
 
     [Header("Cave Mask Settings")]
     public FastNoiseLite.NoiseType maskNoiseType = FastNoiseLite.NoiseType.OpenSimplex2;
@@ -35,29 +36,29 @@ public class CaveGenerator : ScriptableObject
 
     public void ApplyCaves(BlockType[,,] terrain, float xOffset, float zOffset)
     {
-        int height = (int)(ChunkRenderer.CHUNK_HEIGHT * .5f);
+        int height = (int)(ChunkRenderer.CHUNK_HEIGHT * caveHeightLimit);
         for (int x = 0; x < ChunkRenderer.CHUNK_WIDTH; ++x)
         {
-            for (int y = 0; y < height; ++y)
+            float worldX = x + xOffset;
+
+            for (int z = 0; z < ChunkRenderer.CHUNK_WIDTH; ++z)
             {
-                for (int z = 0; z < ChunkRenderer.CHUNK_WIDTH; ++z)
+                float worldZ = z + zOffset;
+
+                float caveMask = _maskNoise.GetNoise(
+                    worldX * maskMultiplier,
+                    worldZ * maskMultiplier) + maskOffset;
+
+                for (int y = 0; y < height; ++y)
                 {
                     if (terrain[x, y, z] == BlockType.Air)
                         continue;
-
-                    float worldX = x + xOffset;
-                    float worldZ = z + zOffset;
 
                     float caveValue = _caveNoise.GetNoise(
                         worldX * caveMultiplierXZ,
                         y * caveMultiplierY,
                         worldZ * caveMultiplierXZ);
 
-                    float caveMask = _maskNoise.GetNoise(
-                        worldX * maskMultiplier,
-                        worldZ * maskMultiplier) + maskOffset;
-
-                    //Debug.Log(caveMask);
                     //if (caveValue > caveThreshold)
                     //if (caveValue > caveMask)
                     if (caveValue > Mathf.Max(caveMask, caveThreshold))
