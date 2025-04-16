@@ -4,7 +4,8 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Cave Generator")]
 public class CaveGenerator : ScriptableObject
 {
-    [Range(0f, 1f)] public float caveHeightLimit = 0.5f;
+    [Range(0f, 1f)] public float caveHeightLimit = 0.7f;
+    
     [Header("Main Cave Settings")]
     public FastNoiseLite.NoiseType caveNoiseType = FastNoiseLite.NoiseType.Perlin;
     public float caveFrequency = 0.025f;
@@ -36,7 +37,7 @@ public class CaveGenerator : ScriptableObject
 
     public void ApplyCaves(BlockType[,,] terrain, float xOffset, float zOffset)
     {
-        int height = (int)(ChunkRenderer.CHUNK_HEIGHT * caveHeightLimit);
+        int height = (int)(TerrainGenerator.BaseHeightLevel * caveHeightLimit);
         for (int x = 0; x < ChunkRenderer.CHUNK_WIDTH; ++x)
         {
             float worldX = x + xOffset;

@@ -6,7 +6,7 @@ using UnityEngine;
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 public class ChunkRenderer : MonoBehaviour
 {
-    public const int CHUNK_WIDTH = 10, CHUNK_HEIGHT = 48;
+    public const int CHUNK_WIDTH = 10, CHUNK_HEIGHT = 64;
 
     public ChunkData ChunkData;
     public GameWorld World;

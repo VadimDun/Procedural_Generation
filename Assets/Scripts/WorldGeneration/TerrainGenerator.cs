@@ -4,7 +4,7 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Terrain generator")]
 public class TerrainGenerator : ScriptableObject
 {
-    public float BaseHeight = 8;
+    [Range(0f, 1f)] public static float BaseHeightLevel = 0.5f;
 
     [Serializable]
     public class NoiseOctaveSettings
@@ -44,7 +44,7 @@ public class TerrainGenerator : ScriptableObject
             for (int z = 0; z < ChunkRenderer.CHUNK_WIDTH; ++z) {
                 float xWorld = xOffset + x;
                 float zWorld = zOffset + z;
-                float height = ChunkRenderer.CHUNK_HEIGHT * .6f + GetHeight(xWorld, zWorld);
+                float height = GetHeight(xWorld, zWorld);
 
                 float grassHeight = 2;
                 for (int y = 0; y < height; ++y){
@@ -69,7 +69,7 @@ public class TerrainGenerator : ScriptableObject
 
     private float GetHeight(float x, float y){
         _warpNoise.DomainWarp(ref x, ref y);
-        float result = BaseHeight;
+        float result = ChunkRenderer.CHUNK_HEIGHT * BaseHeightLevel;
 
         for (int i = 0; i < Octaves.Length; i++)
         {
