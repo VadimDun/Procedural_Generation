@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 664d4304e7f38644c9cdb042b8e20508, type: 3}
   m_Name: CaveGenerator
   m_EditorClassIdentifier: 
-  caveNoiseType: 2
-  caveFrequency: 0.05
-  caveMultiplierXZ: 5
-  caveMultiplierY: 10
+  caveNoiseType: 3
+  caveFrequency: 0.025
+  caveMultiplierXZ: 3
+  caveMultiplierY: 5
   maskNoiseType: 0
   maskFrequency: 0.1
   maskMultiplier: 0.3

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "Cave Generator")]
@@ -34,11 +35,12 @@ public class CaveGenerator : ScriptableObject
 
     public void ApplyCaves(BlockType[,,] terrain, float xOffset, float zOffset)
     {
-        for (int x = 0; x < terrain.GetLength(0); x++)
+        int height = (int)(ChunkRenderer.CHUNK_HEIGHT * .5f);
+        for (int x = 0; x < ChunkRenderer.CHUNK_WIDTH; ++x)
         {
-            for (int y = 0; y < terrain.GetLength(1); y++)
+            for (int y = 0; y < height; ++y)
             {
-                for (int z = 0; z < terrain.GetLength(2); z++)
+                for (int z = 0; z < ChunkRenderer.CHUNK_WIDTH; ++z)
                 {
                     if (terrain[x, y, z] == BlockType.Air)
                         continue;
@@ -55,6 +57,9 @@ public class CaveGenerator : ScriptableObject
                         worldX * maskMultiplier,
                         worldZ * maskMultiplier) + maskOffset;
 
+                    //Debug.Log(caveMask);
+                    //if (caveValue > caveThreshold)
+                    //if (caveValue > caveMask)
                     if (caveValue > Mathf.Max(caveMask, caveThreshold))
                     {
                         terrain[x, y, z] = BlockType.Air;

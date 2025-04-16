@@ -8,7 +8,7 @@ using UnityEngine;
 public class GameWorld : MonoBehaviour
 {
     [SerializeField] private int VIEW_RADIUS = 5;
-    [SerializeField] private int DELETING_RADIUS = 8;
+    [SerializeField] private int DELETING_RADIUS = 5;
     public Dictionary<Vector2Int, ChunkData> ChunkDatas = new();
     public ChunkRenderer ChunkPrefab;
     public TerrainGenerator TerGenerator;
@@ -101,7 +101,7 @@ public class GameWorld : MonoBehaviour
         float zPosWorld = chunkCoords.y * ChunkRenderer.CHUNK_WIDTH;
 
         var blocks = TerGenerator.GenerateTerrain(xPosWorld, zPosWorld);
-        //caveGenerator.ApplyCaves(blocks, xPosWorld, zPosWorld);
+        caveGenerator.ApplyCaves(blocks, xPosWorld, zPosWorld);
 
         ChunkData chunkData = new()
         {
