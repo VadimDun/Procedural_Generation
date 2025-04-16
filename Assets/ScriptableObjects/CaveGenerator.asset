@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 664d4304e7f38644c9cdb042b8e20508, type: 3}
+  m_Name: CaveGenerator
+  m_EditorClassIdentifier: 
+  caveNoiseType: 2
+  caveFrequency: 0.05
+  caveMultiplierXZ: 5
+  caveMultiplierY: 10
+  maskNoiseType: 0
+  maskFrequency: 0.1
+  maskMultiplier: 0.3
+  maskOffset: 0.3
+  caveThreshold: 0.2

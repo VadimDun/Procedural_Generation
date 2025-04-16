@@ -11,7 +11,8 @@ public class GameWorld : MonoBehaviour
     [SerializeField] private int DELETING_RADIUS = 8;
     public Dictionary<Vector2Int, ChunkData> ChunkDatas = new();
     public ChunkRenderer ChunkPrefab;
-    public TerrainGenerator Generator;
+    public TerrainGenerator TerGenerator;
+    public CaveGenerator caveGenerator;
 
     private Camera _mainCamera;
     [SerializeField] private Vector2Int _currentPlayerChunk;
@@ -19,7 +20,8 @@ public class GameWorld : MonoBehaviour
     void Start()
     {
         _mainCamera = Camera.main;
-        Generator.Init();
+        TerGenerator.Init();
+        caveGenerator.Init();
         StartCoroutine(Generate(false));
     }
 
@@ -98,10 +100,13 @@ public class GameWorld : MonoBehaviour
         float xPosWorld = chunkCoords.x * ChunkRenderer.CHUNK_WIDTH;
         float zPosWorld = chunkCoords.y * ChunkRenderer.CHUNK_WIDTH;
 
+        var blocks = TerGenerator.GenerateTerrain(xPosWorld, zPosWorld);
+        //caveGenerator.ApplyCaves(blocks, xPosWorld, zPosWorld);
+
         ChunkData chunkData = new()
         {
             ChunkPosition = chunkCoords,
-            Blocks = Generator.GenerateTerrain(xPosWorld, zPosWorld)
+            Blocks = blocks
         };
         ChunkDatas.Add(chunkCoords, chunkData);
 
@@ -115,7 +120,8 @@ public class GameWorld : MonoBehaviour
     [ContextMenu("Regenerate world")]
     public void Regenerate()
     {
-        Generator.Init();
+        TerGenerator.Init();
+        caveGenerator.Init();
 
         foreach (var chunkData in ChunkDatas)
             Destroy(chunkData.Value.Renderer.gameObject);

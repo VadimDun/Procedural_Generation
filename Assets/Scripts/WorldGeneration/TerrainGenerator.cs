@@ -1,9 +1,5 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-
-// On GameWorld
 
 [CreateAssetMenu(menuName = "Terrain generator")]
 public class TerrainGenerator : ScriptableObject
