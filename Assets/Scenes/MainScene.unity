@@ -277,7 +277,7 @@ Transform:
   m_GameObject: {fileID: 1324859749}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1, y: 14, z: 2.26}
+  m_LocalPosition: {x: 1, y: 44, z: 2.26}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -541,9 +541,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60a1c9f0b6bbd8449a6c9c40fe2df1eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  VIEW_RADIUS: 10
+  VIEW_RADIUS: 8
+  DELETING_RADIUS: 8
   ChunkPrefab: {fileID: 5577456208843452532, guid: 8e758a8bfa8871545be6dfa89a62b5d1, type: 3}
-  Generator: {fileID: 11400000, guid: 7dc2ecdb791022548b97a196e3d9537a, type: 2}
+  TerGenerator: {fileID: 11400000, guid: 7dc2ecdb791022548b97a196e3d9537a, type: 2}
+  caveGenerator: {fileID: 11400000, guid: ed0c9d01dad192f48a36572266caefe7, type: 2}
   _currentPlayerChunk: {x: 0, y: 0}
 --- !u!4 &1957198072
 Transform:
