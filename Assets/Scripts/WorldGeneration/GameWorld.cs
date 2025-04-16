@@ -101,7 +101,7 @@ public class GameWorld : MonoBehaviour
         float zPosWorld = chunkCoords.y * ChunkRenderer.CHUNK_WIDTH;
 
         var blocks = TerGenerator.GenerateTerrain(xPosWorld, zPosWorld);
-        caveGenerator.ApplyCaves(blocks, xPosWorld, zPosWorld);
+        caveGenerator.ApplyCaves(blocks, xPosWorld, zPosWorld, TerGenerator.BaseHeightLevel);
 
         ChunkData chunkData = new()
         {

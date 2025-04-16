@@ -35,9 +35,9 @@ public class CaveGenerator : ScriptableObject
         _maskNoise.SetFrequency(maskFrequency);
     }
 
-    public void ApplyCaves(BlockType[,,] terrain, float xOffset, float zOffset)
+    public void ApplyCaves(BlockType[,,] terrain, float xOffset, float zOffset, float baseHeightLevel)
     {
-        int height = (int)(TerrainGenerator.BaseHeightLevel * caveHeightLimit);
+        int height = (int)(ChunkRenderer.CHUNK_HEIGHT * baseHeightLevel * caveHeightLimit);
         for (int x = 0; x < ChunkRenderer.CHUNK_WIDTH; ++x)
         {
             float worldX = x + xOffset;

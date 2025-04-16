@@ -4,7 +4,7 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Terrain generator")]
 public class TerrainGenerator : ScriptableObject
 {
-    [Range(0f, 1f)] public static float BaseHeightLevel = 0.5f;
+    [Range(0f, 1f)] public float BaseHeightLevel = 0.5f;
 
     [Serializable]
     public class NoiseOctaveSettings
