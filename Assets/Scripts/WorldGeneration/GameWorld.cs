@@ -1,17 +1,25 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 // On GameWorld
+[RequireComponent(typeof(BiomeGenerator))]
 public class GameWorld : MonoBehaviour
 {
+
+    public BiomeGenerator biomeGenerator;
+
+    [Header("Radiuses")]
     [SerializeField] private int VIEW_RADIUS = 5;
     [SerializeField] private int DELETING_RADIUS = 5;
-    public Dictionary<Vector2Int, ChunkData> ChunkDatas = new();
+
+    [Header("Prefabs and Generators")]
     public ChunkRenderer ChunkPrefab;
-    public TerrainGenerator TerGenerator;
+    public Dictionary<Vector2Int, ChunkData> ChunkDatas = new();
+    public TerrainGenerator CurTerGenerator;
+    public TerrainDictionary TerDictionary;
+    public Dictionary<BiomeType, TerrainGenerator> TerGenerators;
     public CaveGenerator caveGenerator;
 
     private Camera _mainCamera;
@@ -19,9 +27,11 @@ public class GameWorld : MonoBehaviour
 
     void Start()
     {
+        TerGenerators = TerDictionary.GetDictionary();
         _mainCamera = Camera.main;
-        TerGenerator.Init();
+        CurTerGenerator.Init();
         caveGenerator.Init();
+        biomeGenerator.Init();
         StartCoroutine(Generate(false));
     }
 
@@ -99,9 +109,11 @@ public class GameWorld : MonoBehaviour
     {
         float xPosWorld = chunkCoords.x * ChunkRenderer.CHUNK_WIDTH;
         float zPosWorld = chunkCoords.y * ChunkRenderer.CHUNK_WIDTH;
-
-        var blocks = TerGenerator.GenerateTerrain(xPosWorld, zPosWorld);
-        caveGenerator.ApplyCaves(blocks, xPosWorld, zPosWorld, TerGenerator.BaseHeightLevel);
+        var biome = biomeGenerator.GetBiome(xPosWorld, zPosWorld);
+        var tg = TerGenerators[biome];
+        tg.Init();
+        var blocks = tg.GenerateTerrain(xPosWorld, zPosWorld);
+        //caveGenerator.ApplyCaves(blocks, xPosWorld, zPosWorld, CurTerGenerator.BaseHeightLevel);
 
         ChunkData chunkData = new()
         {
@@ -120,7 +132,7 @@ public class GameWorld : MonoBehaviour
     [ContextMenu("Regenerate world")]
     public void Regenerate()
     {
-        TerGenerator.Init();
+        CurTerGenerator.Init();
         caveGenerator.Init();
 
         foreach (var chunkData in ChunkDatas)

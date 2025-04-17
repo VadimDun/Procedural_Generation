@@ -522,6 +522,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1957198072}
   - component: {fileID: 1957198071}
+  - component: {fileID: 1957198073}
   m_Layer: 0
   m_Name: GameWorld
   m_TagString: Untagged
@@ -544,7 +545,7 @@ MonoBehaviour:
   VIEW_RADIUS: 8
   DELETING_RADIUS: 8
   ChunkPrefab: {fileID: 5577456208843452532, guid: 8e758a8bfa8871545be6dfa89a62b5d1, type: 3}
-  TerGenerator: {fileID: 11400000, guid: f5dece0ee42941549be1c066f68d1aa2, type: 2}
+  CurTerGenerator: {fileID: 11400000, guid: f5dece0ee42941549be1c066f68d1aa2, type: 2}
   caveGenerator: {fileID: 11400000, guid: ed0c9d01dad192f48a36572266caefe7, type: 2}
   _currentPlayerChunk: {x: 0, y: 0}
 --- !u!4 &1957198072
@@ -562,6 +563,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1957198073
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1957198070}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33b402ccce839624fa96c37ea01b5c3f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  biomeNoiseType: 0
+  biomeFrequency: 0.05
+  seed: 1000
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
