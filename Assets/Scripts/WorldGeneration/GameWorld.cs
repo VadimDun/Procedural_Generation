@@ -1,27 +1,32 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 // On GameWorld
+[RequireComponent(typeof(BiomeGenerator))]
 public class GameWorld : MonoBehaviour
 {
+    [SerializeField] private Vector2Int _currentPlayerChunk;
+
+    [Header("Radiuses")]
     [SerializeField] private int VIEW_RADIUS = 5;
     [SerializeField] private int DELETING_RADIUS = 5;
-    public Dictionary<Vector2Int, ChunkData> ChunkDatas = new();
+
+    [Header("Prefabs and Generators")]
     public ChunkRenderer ChunkPrefab;
-    public TerrainGenerator TerGenerator;
+    public Dictionary<Vector2Int, ChunkData> ChunkDatas = new();
+    public Dictionary<BiomeType, TerrainGenerator> BiomeGenerators;
     public CaveGenerator caveGenerator;
+    public BiomeGenerator biomeGenerator;
 
     private Camera _mainCamera;
-    [SerializeField] private Vector2Int _currentPlayerChunk;
 
     void Start()
     {
         _mainCamera = Camera.main;
-        TerGenerator.Init();
         caveGenerator.Init();
+        biomeGenerator.Init();
         StartCoroutine(Generate(false));
     }
 
@@ -97,11 +102,16 @@ public class GameWorld : MonoBehaviour
 
     private void LoadChunkAt(Vector2Int chunkCoords)
     {
+        BiomeType biome = biomeGenerator.GetBiome(chunkCoords);
+        BlockType surfaceBlocktype = biomeGenerator.GetSurfaceBlock(biome);
+        TerrainGenerator terrainGenerator = BiomeGenerators[biome];
+        terrainGenerator.Init();
+
         float xPosWorld = chunkCoords.x * ChunkRenderer.CHUNK_WIDTH;
         float zPosWorld = chunkCoords.y * ChunkRenderer.CHUNK_WIDTH;
 
-        var blocks = TerGenerator.GenerateTerrain(xPosWorld, zPosWorld);
-        caveGenerator.ApplyCaves(blocks, xPosWorld, zPosWorld);
+        BlockType[,,] blocks = terrainGenerator.GenerateTerrain(xPosWorld, zPosWorld, surfaceBlocktype);
+        caveGenerator.ApplyCaves(blocks, xPosWorld, zPosWorld, terrainGenerator.BaseHeightLevel);
 
         ChunkData chunkData = new()
         {
@@ -120,7 +130,6 @@ public class GameWorld : MonoBehaviour
     [ContextMenu("Regenerate world")]
     public void Regenerate()
     {
-        TerGenerator.Init();
         caveGenerator.Init();
 
         foreach (var chunkData in ChunkDatas)

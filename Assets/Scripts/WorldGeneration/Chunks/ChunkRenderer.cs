@@ -6,7 +6,7 @@ using UnityEngine;
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 public class ChunkRenderer : MonoBehaviour
 {
-    public const int CHUNK_WIDTH = 10, CHUNK_HEIGHT = 48;
+    public const int CHUNK_WIDTH = 10, CHUNK_HEIGHT = 64;
 
     public ChunkData ChunkData;
     public GameWorld World;
@@ -224,12 +224,13 @@ public class ChunkRenderer : MonoBehaviour
     {
         var uv = blockType switch
         {
-            BlockType.Grass => new Vector2(0, 0.5f),
-            BlockType.Stone => new Vector2(0, 0),
+            BlockType.Grass => new Vector2((float)1/192, (float)65/192),
+            BlockType.Stone => new Vector2((float)1 / 192, (float)1 / 192),
+            BlockType.Sand => new Vector2((float)1 / 3, (float)1 / 192),
             _ => new Vector2(0, 0),
         };
 
-        float materialWidth = 0.5f;
+        float materialWidth = (float)32 / 192;
         for (int i = 0; i < 2; ++i)
             for (int j = 0; j < 2; ++j)
                 _uvs.Add(new Vector2(i * materialWidth, j * materialWidth) + uv);

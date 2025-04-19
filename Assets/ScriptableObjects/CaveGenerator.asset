@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 664d4304e7f38644c9cdb042b8e20508, type: 3}
   m_Name: CaveGenerator
   m_EditorClassIdentifier: 
+  caveHeightLimit: 0.7
   caveNoiseType: 3
   caveFrequency: 0.025
   caveMultiplierXZ: 3
