@@ -2,18 +2,20 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-// On GameWorld
+// On subObject of GameWorld
 public class BiomeGenerator : MonoBehaviour
 {
     public FastNoiseLite.NoiseType biomeNoiseType = FastNoiseLite.NoiseType.OpenSimplex2;
     public float biomeFrequency = 0.05f;
     public int seed = 1000;
+    public float Multiplier = 1f;
 
     public IReadOnlyDictionary<String, float> Thresholds = new Dictionary<String, float>(){
-        ["plains"] = 0.3f,
-        ["forest"] = 0.5f,
-        ["mountains"] = 0.8f,
-        
+        ["desert"] = -0.7f,
+        ["flatlands"] = 0f,
+        ["forest"] = 0.2f,
+        ["hills"] = 0.7f,
+        ["mountains"] = 1f,
     };
 
     private FastNoiseLite _biomeNoise;
@@ -32,37 +34,31 @@ public class BiomeGenerator : MonoBehaviour
 
     public BiomeType GetBiome(float worldX, float worldZ)
     {
-        float biomeValue = _biomeNoise.GetNoise(worldX, worldZ);
-        biomeValue = (biomeValue + 1) / 2f;
+        float biomeValue = _biomeNoise.GetNoise(Multiplier * worldX, Multiplier * worldZ);
 
-        if (biomeValue < Thresholds["plains"]) return BiomeType.Plains;
-        if (biomeValue < Thresholds["forest"]) return BiomeType.Hills; //////////////////////////////
-        if (biomeValue < Thresholds["mountains"]) return BiomeType.Mountains;
-        return BiomeType.Hills; //////////////////////////////////////////////////////
+        if (biomeValue < Thresholds["desert"]) return BiomeType.Desert;
+        if (biomeValue < Thresholds["flatlands"]) return BiomeType.Flatlands;
+        if (biomeValue < Thresholds["forest"]) return BiomeType.Forest;
+        if (biomeValue < Thresholds["hills"]) return BiomeType.Hills;
+        return BiomeType.Mountains;
     }
 
     public BlockType GetSurfaceBlock(float worldX, float worldZ)
     {
         BiomeType biome = GetBiome(worldX, worldZ);
 
-        switch (biome)
+        return biome switch
         {
-            case BiomeType.Plains:
-            case BiomeType.Forest:
-                return BlockType.Grass;
-            case BiomeType.Mountains:
-                return BlockType.Stone;
-            case BiomeType.Desert:
-                return BlockType.Sand;
-            default:
-                return BlockType.Grass;
-        }
+            BiomeType.Mountains => BlockType.Stone,
+            BiomeType.Desert => BlockType.Sand,
+            _ => BlockType.Grass,
+        };
     }
 }
 
 public enum BiomeType
 {
-    Plains,
+    Flatlands,
     Forest,
     Hills,
     Mountains,

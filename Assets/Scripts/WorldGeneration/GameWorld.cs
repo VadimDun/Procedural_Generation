@@ -8,7 +8,6 @@ using UnityEngine;
 public class GameWorld : MonoBehaviour
 {
 
-    public BiomeGenerator biomeGenerator;
 
     [Header("Radiuses")]
     [SerializeField] private int VIEW_RADIUS = 5;
@@ -21,6 +20,7 @@ public class GameWorld : MonoBehaviour
     public TerrainDictionary TerDictionary;
     public Dictionary<BiomeType, TerrainGenerator> TerGenerators;
     public CaveGenerator caveGenerator;
+    public BiomeGenerator biomeGenerator;
 
     private Camera _mainCamera;
     [SerializeField] private Vector2Int _currentPlayerChunk;
@@ -112,8 +112,9 @@ public class GameWorld : MonoBehaviour
         var biome = biomeGenerator.GetBiome(xPosWorld, zPosWorld);
         var tg = TerGenerators[biome];
         tg.Init();
-        var blocks = tg.GenerateTerrain(xPosWorld, zPosWorld);
-        //caveGenerator.ApplyCaves(blocks, xPosWorld, zPosWorld, CurTerGenerator.BaseHeightLevel);
+        BlockType surfaceBlocktype = biomeGenerator.GetSurfaceBlock(xPosWorld, zPosWorld);
+        var blocks = tg.GenerateTerrain(xPosWorld, zPosWorld, surfaceBlocktype);
+        caveGenerator.ApplyCaves(blocks, xPosWorld, zPosWorld, CurTerGenerator.BaseHeightLevel);
 
         ChunkData chunkData = new()
         {

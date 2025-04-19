@@ -36,7 +36,7 @@ public class TerrainGenerator : ScriptableObject
         _warpNoise.SetDomainWarpAmp(DomainWarp.Amplitude);
     }
 
-    public BlockType[,,] GenerateTerrain(float xOffset, float zOffset){
+    public BlockType[,,] GenerateTerrain(float xOffset, float zOffset, BlockType SurfaceBlockType){
         
         var result = new BlockType[ChunkRenderer.CHUNK_WIDTH, ChunkRenderer.CHUNK_HEIGHT, ChunkRenderer.CHUNK_WIDTH];
 
@@ -46,10 +46,11 @@ public class TerrainGenerator : ScriptableObject
                 float zWorld = zOffset + z;
                 float height = GetHeight(xWorld, zWorld);
 
-                float grassHeight = 2;
+                float surfaceHeight = 2;
                 for (int y = 0; y < height; ++y){
-                    if (height - y < grassHeight){
-                        result[x, y, z] = BlockType.Grass;
+                    if (height - y < surfaceHeight)
+                    {
+                        result[x, y, z] = SurfaceBlockType;
                     }
                     else{
                         result[x, y, z] = BlockType.Stone;

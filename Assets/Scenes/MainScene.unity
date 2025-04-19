@@ -154,6 +154,56 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1324859754}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &446290882
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 446290884}
+  - component: {fileID: 446290883}
+  m_Layer: 0
+  m_Name: Terrain Dictionary
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &446290883
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 446290882}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8decb5fd0e31a574fb913fb607719cab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _terrainGenerators:
+    forest: {fileID: 11400000, guid: f5dece0ee42941549be1c066f68d1aa2, type: 2}
+    flatlands: {fileID: 11400000, guid: f5dece0ee42941549be1c066f68d1aa2, type: 2}
+    hill: {fileID: 11400000, guid: bd4a7b65e32ee764d9368a36cda28728, type: 2}
+    mountain: {fileID: 11400000, guid: 0e215456ac3cfcf43baa61f55c995a86, type: 2}
+    desert: {fileID: 11400000, guid: f5dece0ee42941549be1c066f68d1aa2, type: 2}
+--- !u!4 &446290884
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 446290882}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.117638946, y: 29.878817, z: -10.207453}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1957198072}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1324859749
 GameObject:
   m_ObjectHideFlags: 0
@@ -546,7 +596,9 @@ MonoBehaviour:
   DELETING_RADIUS: 8
   ChunkPrefab: {fileID: 5577456208843452532, guid: 8e758a8bfa8871545be6dfa89a62b5d1, type: 3}
   CurTerGenerator: {fileID: 11400000, guid: f5dece0ee42941549be1c066f68d1aa2, type: 2}
+  TerDictionary: {fileID: 446290883}
   caveGenerator: {fileID: 11400000, guid: ed0c9d01dad192f48a36572266caefe7, type: 2}
+  biomeGenerator: {fileID: 1957198073}
   _currentPlayerChunk: {x: 0, y: 0}
 --- !u!4 &1957198072
 Transform:
@@ -560,7 +612,8 @@ Transform:
   m_LocalPosition: {x: 1.3785214, y: 9.33029, z: 11.853477}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 446290884}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1957198073
@@ -576,8 +629,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   biomeNoiseType: 0
-  biomeFrequency: 0.05
+  biomeFrequency: 0.002
   seed: 1000
+  Multiplier: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

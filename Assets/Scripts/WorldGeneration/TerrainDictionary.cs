@@ -1,8 +1,5 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
-using UnityEditor.Build.Player;
 using UnityEngine;
 
 public class TerrainDictionary : MonoBehaviour
@@ -10,19 +7,25 @@ public class TerrainDictionary : MonoBehaviour
     [Serializable]
     public class TerrainGenerators
     {
-        public TerrainGenerator plain;
-        public TerrainGenerator mountain;
+        public TerrainGenerator forest;
+        public TerrainGenerator flatlands;
         public TerrainGenerator hill;
+        public TerrainGenerator mountain;
+        public TerrainGenerator desert;
     }
 
     [SerializeField] private TerrainGenerators _terrainGenerators;
 
     public Dictionary<BiomeType, TerrainGenerator> GetDictionary()
     {
-        Dictionary<BiomeType, TerrainGenerator> biomes = new();
-        biomes[BiomeType.Plains] = _terrainGenerators.plain;
-        biomes[BiomeType.Mountains] = _terrainGenerators.mountain;
-        biomes[BiomeType.Hills] = _terrainGenerators.hill;
+        Dictionary<BiomeType, TerrainGenerator> biomes = new()
+        {
+            [BiomeType.Forest] = _terrainGenerators.forest,
+            [BiomeType.Flatlands] = _terrainGenerators.flatlands,
+            [BiomeType.Hills] = _terrainGenerators.hill,
+            [BiomeType.Mountains] = _terrainGenerators.mountain,
+            [BiomeType.Desert] = _terrainGenerators.desert
+        };
 
         return biomes;
     }
