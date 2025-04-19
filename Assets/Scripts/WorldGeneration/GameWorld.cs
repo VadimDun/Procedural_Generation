@@ -7,7 +7,7 @@ using UnityEngine;
 [RequireComponent(typeof(BiomeGenerator))]
 public class GameWorld : MonoBehaviour
 {
-    [SerializeField] private Vector2Int _currentPlayerChunk;
+    public Vector2Int CurrentPlayerChunk{ get; private set; }
 
     [Header("Radiuses")]
     [SerializeField] private int VIEW_RADIUS = 5;
@@ -32,9 +32,9 @@ public class GameWorld : MonoBehaviour
 
     private IEnumerator Generate(bool wait)
     {
-        for (int x = _currentPlayerChunk.x - VIEW_RADIUS; x <= _currentPlayerChunk.x + VIEW_RADIUS; ++x)
+        for (int x = CurrentPlayerChunk.x - VIEW_RADIUS; x <= CurrentPlayerChunk.x + VIEW_RADIUS; ++x)
         {
-            for (int y = _currentPlayerChunk.y - VIEW_RADIUS; y <= _currentPlayerChunk.y + VIEW_RADIUS; ++y)
+            for (int y = CurrentPlayerChunk.y - VIEW_RADIUS; y <= CurrentPlayerChunk.y + VIEW_RADIUS; ++y)
             {
                 var chunkPosition = new Vector2Int(x, y);
                 if (ChunkDatas.ContainsKey(chunkPosition)) continue;
@@ -78,7 +78,7 @@ public class GameWorld : MonoBehaviour
 
         foreach (var chunkData in ChunkDatas)
         {
-            var dist = _currentPlayerChunk - chunkData.Key;
+            var dist = CurrentPlayerChunk - chunkData.Key;
 
             if (Math.Abs(dist.x) > DELETING_RADIUS || Math.Abs(dist.y) > DELETING_RADIUS)
             {
@@ -95,7 +95,6 @@ public class GameWorld : MonoBehaviour
                     Destroy(chunkData.Renderer.gameObject);
                 }
                 ChunkDatas.Remove(chunkPos);
-                RebuildNeighborChunks(chunkPos);
             }
         }
     }
@@ -144,9 +143,9 @@ public class GameWorld : MonoBehaviour
     {
         Vector3Int playerWorldPos = Vector3Int.FloorToInt(_mainCamera.transform.position);
         Vector2Int playerChunk = GetChunkAt(playerWorldPos);
-        if (playerChunk != _currentPlayerChunk)
+        if (playerChunk != CurrentPlayerChunk)
         {
-            _currentPlayerChunk = playerChunk;
+            CurrentPlayerChunk = playerChunk;
             StartCoroutine(Generate(true));
         }
     }
