@@ -40,36 +40,12 @@ public class GameWorld : MonoBehaviour
                 if (ChunkDatas.ContainsKey(chunkPosition)) continue;
 
                 LoadChunkAt(chunkPosition);
-                RebuildNeighborChunks(chunkPosition);
 
                 if (wait) yield return new WaitForSecondsRealtime(.1f);
             }
         }
 
         RemoveDistantChunks();
-    }
-
-    private void RebuildNeighborChunks(Vector2Int chunkPosition)
-    {
-        Vector2Int[] neighborDirections = new Vector2Int[]
-        {
-            new(1, 0),
-            new(-1, 0),
-            new(0, 1),
-            new(0, -1)
-        };
-
-        foreach (var dir in neighborDirections)
-        {
-            Vector2Int neighborPos = chunkPosition + dir;
-            if (ChunkDatas.TryGetValue(neighborPos, out ChunkData neighborChunk))
-            {
-                if (neighborChunk.Renderer != null)
-                {
-                    neighborChunk.Renderer.RebuildMesh();
-                }
-            }
-        }
     }
 
     private void RemoveDistantChunks()
@@ -95,7 +71,6 @@ public class GameWorld : MonoBehaviour
                     Destroy(chunkData.Renderer.gameObject);
                 }
                 ChunkDatas.Remove(chunkPos);
-                RebuildNeighborChunks(chunkPos);
             }
         }
     }

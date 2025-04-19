@@ -58,27 +58,27 @@ public class ChunkRenderer : MonoBehaviour
 
         if (blockType.Equals(BlockType.Air)) return;
 
-        if (GetBlockAt(blockPos + Vector3Int.right).Equals(BlockType.Air)){
+        if (GetBlockAt(blockPos + Vector3Int.right) == BlockType.Air){
             GetRightSide(blockPos);
             SetMaterial(blockType);
         }
-        if (GetBlockAt(blockPos + Vector3Int.left).Equals(BlockType.Air)){
+        if (GetBlockAt(blockPos + Vector3Int.left) == BlockType.Air){
             GetLeftSide(blockPos);
             SetMaterial(blockType);
         }    
-        if (GetBlockAt(blockPos + Vector3Int.forward).Equals(BlockType.Air)){
+        if (GetBlockAt(blockPos + Vector3Int.forward) == BlockType.Air){
             GetFrontSide(blockPos);
             SetMaterial(blockType);
         }
-        if (GetBlockAt(blockPos + Vector3Int.back).Equals(BlockType.Air)){
+        if (GetBlockAt(blockPos + Vector3Int.back) == BlockType.Air){
             GetBackSide(blockPos);
             SetMaterial(blockType);
         }    
-        if (GetBlockAt(blockPos + Vector3Int.up).Equals(BlockType.Air)){
+        if (GetBlockAt(blockPos + Vector3Int.up) == BlockType.Air){
             GetTopSide(blockPos);
             SetMaterial(blockType);
         }      
-        if (blockPos.y > 0 && GetBlockAt(blockPos + Vector3Int.down).Equals(BlockType.Air)){
+        if (blockPos.y > 0 && GetBlockAt(blockPos + Vector3Int.down) == BlockType.Air){
             GetBottomSide(blockPos);
             SetMaterial(blockType);
         }    
@@ -122,7 +122,7 @@ public class ChunkRenderer : MonoBehaviour
             if (World.ChunkDatas.TryGetValue(neighboringChunkPosition, out ChunkData neighboringChunk))
                 return neighboringChunk.Blocks[coords.x, coords.y, coords.z];
 
-            return BlockType.Air;
+            return BlockType.Stone; // чтобы не генерировались боковые стенки у краевых чанков
         }
     }
 
