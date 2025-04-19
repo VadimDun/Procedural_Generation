@@ -7,7 +7,7 @@ using UnityEngine;
 [RequireComponent(typeof(BiomeGenerator))]
 public class GameWorld : MonoBehaviour
 {
-    [SerializeField] private Vector2Int _currentPlayerChunk;
+    public Vector2Int CurrentPlayerChunk{ get; private set; }
 
     [Header("Radiuses")]
     [SerializeField] private int VIEW_RADIUS = 5;
@@ -32,14 +32,15 @@ public class GameWorld : MonoBehaviour
 
     private IEnumerator Generate(bool wait)
     {
-        for (int x = _currentPlayerChunk.x - VIEW_RADIUS; x <= _currentPlayerChunk.x + VIEW_RADIUS; ++x)
+        for (int x = CurrentPlayerChunk.x - VIEW_RADIUS; x <= CurrentPlayerChunk.x + VIEW_RADIUS; ++x)
         {
-            for (int y = _currentPlayerChunk.y - VIEW_RADIUS; y <= _currentPlayerChunk.y + VIEW_RADIUS; ++y)
+            for (int y = CurrentPlayerChunk.y - VIEW_RADIUS; y <= CurrentPlayerChunk.y + VIEW_RADIUS; ++y)
             {
                 var chunkPosition = new Vector2Int(x, y);
                 if (ChunkDatas.ContainsKey(chunkPosition)) continue;
 
                 LoadChunkAt(chunkPosition);
+                RebuildNeighborChunks(chunkPosition);
 
                 if (wait) yield return new WaitForSecondsRealtime(.1f);
             }
@@ -48,13 +49,36 @@ public class GameWorld : MonoBehaviour
         RemoveDistantChunks();
     }
 
+    private void RebuildNeighborChunks(Vector2Int chunkPosition)
+    {
+        Vector2Int[] neighborDirections = new Vector2Int[]
+        {
+            new(1, 0),
+            new(-1, 0),
+            new(0, 1),
+            new(0, -1)
+        };
+
+        foreach (var dir in neighborDirections)
+        {
+            Vector2Int neighborPos = chunkPosition + dir;
+            if (ChunkDatas.TryGetValue(neighborPos, out ChunkData neighborChunk))
+            {
+                if (neighborChunk.Renderer != null)
+                {
+                    neighborChunk.Renderer.RebuildMesh();
+                }
+            }
+        }
+    }
+
     private void RemoveDistantChunks()
     {
         List<Vector2Int> chunksToRemove = new();
 
         foreach (var chunkData in ChunkDatas)
         {
-            var dist = _currentPlayerChunk - chunkData.Key;
+            var dist = CurrentPlayerChunk - chunkData.Key;
 
             if (Math.Abs(dist.x) > DELETING_RADIUS || Math.Abs(dist.y) > DELETING_RADIUS)
             {
@@ -119,9 +143,9 @@ public class GameWorld : MonoBehaviour
     {
         Vector3Int playerWorldPos = Vector3Int.FloorToInt(_mainCamera.transform.position);
         Vector2Int playerChunk = GetChunkAt(playerWorldPos);
-        if (playerChunk != _currentPlayerChunk)
+        if (playerChunk != CurrentPlayerChunk)
         {
-            _currentPlayerChunk = playerChunk;
+            CurrentPlayerChunk = playerChunk;
             StartCoroutine(Generate(true));
         }
     }
