@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-// On subObject of GameWorld
 public class BiomeGenerator : MonoBehaviour
 {
     public FastNoiseLite.NoiseType biomeNoiseType = FastNoiseLite.NoiseType.OpenSimplex2;
@@ -32,9 +31,9 @@ public class BiomeGenerator : MonoBehaviour
         _detailNoise.SetFrequency(0.1f);
     }
 
-    public BiomeType GetBiome(float worldX, float worldZ)
+    public BiomeType GetBiome(Vector2Int chunkCoords)
     {
-        float biomeValue = _biomeNoise.GetNoise(Multiplier * worldX, Multiplier * worldZ);
+        float biomeValue = _biomeNoise.GetNoise(Multiplier * chunkCoords.x, Multiplier * chunkCoords.y);
 
         if (biomeValue < Thresholds["desert"]) return BiomeType.Desert;
         if (biomeValue < Thresholds["flatlands"]) return BiomeType.Flatlands;
@@ -43,10 +42,8 @@ public class BiomeGenerator : MonoBehaviour
         return BiomeType.Mountains;
     }
 
-    public BlockType GetSurfaceBlock(float worldX, float worldZ)
+    public BlockType GetSurfaceBlock(BiomeType biome)
     {
-        BiomeType biome = GetBiome(worldX, worldZ);
-
         return biome switch
         {
             BiomeType.Mountains => BlockType.Stone,

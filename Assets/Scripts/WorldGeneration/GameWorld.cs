@@ -7,7 +7,7 @@ using UnityEngine;
 [RequireComponent(typeof(BiomeGenerator))]
 public class GameWorld : MonoBehaviour
 {
-
+    [SerializeField] private Vector2Int _currentPlayerChunk;
 
     [Header("Radiuses")]
     [SerializeField] private int VIEW_RADIUS = 5;
@@ -16,20 +16,15 @@ public class GameWorld : MonoBehaviour
     [Header("Prefabs and Generators")]
     public ChunkRenderer ChunkPrefab;
     public Dictionary<Vector2Int, ChunkData> ChunkDatas = new();
-    public TerrainGenerator CurTerGenerator;
-    public TerrainDictionary TerDictionary;
-    public Dictionary<BiomeType, TerrainGenerator> TerGenerators;
+    public Dictionary<BiomeType, TerrainGenerator> BiomeGenerators;
     public CaveGenerator caveGenerator;
     public BiomeGenerator biomeGenerator;
 
     private Camera _mainCamera;
-    [SerializeField] private Vector2Int _currentPlayerChunk;
 
     void Start()
     {
-        TerGenerators = TerDictionary.GetDictionary();
         _mainCamera = Camera.main;
-        CurTerGenerator.Init();
         caveGenerator.Init();
         biomeGenerator.Init();
         StartCoroutine(Generate(false));
@@ -107,14 +102,16 @@ public class GameWorld : MonoBehaviour
 
     private void LoadChunkAt(Vector2Int chunkCoords)
     {
+        BiomeType biome = biomeGenerator.GetBiome(chunkCoords);
+        BlockType surfaceBlocktype = biomeGenerator.GetSurfaceBlock(biome);
+        TerrainGenerator terrainGenerator = BiomeGenerators[biome];
+        terrainGenerator.Init();
+
         float xPosWorld = chunkCoords.x * ChunkRenderer.CHUNK_WIDTH;
         float zPosWorld = chunkCoords.y * ChunkRenderer.CHUNK_WIDTH;
-        var biome = biomeGenerator.GetBiome(xPosWorld, zPosWorld);
-        var tg = TerGenerators[biome];
-        tg.Init();
-        BlockType surfaceBlocktype = biomeGenerator.GetSurfaceBlock(xPosWorld, zPosWorld);
-        var blocks = tg.GenerateTerrain(xPosWorld, zPosWorld, surfaceBlocktype);
-        caveGenerator.ApplyCaves(blocks, xPosWorld, zPosWorld, CurTerGenerator.BaseHeightLevel);
+
+        BlockType[,,] blocks = terrainGenerator.GenerateTerrain(xPosWorld, zPosWorld, surfaceBlocktype);
+        caveGenerator.ApplyCaves(blocks, xPosWorld, zPosWorld, terrainGenerator.BaseHeightLevel);
 
         ChunkData chunkData = new()
         {
@@ -133,7 +130,6 @@ public class GameWorld : MonoBehaviour
     [ContextMenu("Regenerate world")]
     public void Regenerate()
     {
-        CurTerGenerator.Init();
         caveGenerator.Init();
 
         foreach (var chunkData in ChunkDatas)

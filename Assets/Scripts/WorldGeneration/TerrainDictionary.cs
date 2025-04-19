@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+// On subObject of GameWorld
 public class TerrainDictionary : MonoBehaviour
 {
     [Serializable]
@@ -14,9 +15,12 @@ public class TerrainDictionary : MonoBehaviour
         public TerrainGenerator desert;
     }
 
+    [SerializeField] private GameWorld _gameWorld;
+
     [SerializeField] private TerrainGenerators _terrainGenerators;
 
-    public Dictionary<BiomeType, TerrainGenerator> GetDictionary()
+    public Dictionary<BiomeType, TerrainGenerator> Biomes { get; }
+    void Awake()
     {
         Dictionary<BiomeType, TerrainGenerator> biomes = new()
         {
@@ -27,7 +31,7 @@ public class TerrainDictionary : MonoBehaviour
             [BiomeType.Desert] = _terrainGenerators.desert
         };
 
-        return biomes;
+        _gameWorld.BiomeGenerators = biomes;
     }
 
 }
