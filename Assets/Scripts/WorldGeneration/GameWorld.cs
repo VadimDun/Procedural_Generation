@@ -19,14 +19,19 @@ public class GameWorld : MonoBehaviour
     public Dictionary<BiomeType, TerrainGenerator> BiomeGenerators;
     public CaveGenerator caveGenerator;
     public BiomeGenerator biomeGenerator;
+    public TreeGenerator treeGenerator;
 
     private Camera _mainCamera;
 
     void Start()
     {
         _mainCamera = Camera.main;
+
         caveGenerator.Init();
         biomeGenerator.Init();
+        treeGenerator.SetSeed(biomeGenerator.seed);
+        treeGenerator.Init();
+
         StartCoroutine(Generate(false));
     }
 
@@ -111,6 +116,7 @@ public class GameWorld : MonoBehaviour
 
         BlockType[,,] blocks = terrainGenerator.GenerateTerrain(xPosWorld, zPosWorld, surfaceBlocktype);
         caveGenerator.ApplyCaves(blocks, xPosWorld, zPosWorld, terrainGenerator.BaseHeightLevel);
+        treeGenerator.GenerateTrees(blocks, xPosWorld, zPosWorld);
 
         ChunkData chunkData = new()
         {

@@ -840,6 +840,7 @@ GameObject:
   - component: {fileID: 1957198072}
   - component: {fileID: 1957198071}
   - component: {fileID: 1957198073}
+  - component: {fileID: 1957198074}
   m_Layer: 0
   m_Name: GameWorld
   m_TagString: Untagged
@@ -864,6 +865,7 @@ MonoBehaviour:
   ChunkPrefab: {fileID: 5577456208843452532, guid: 8e758a8bfa8871545be6dfa89a62b5d1, type: 3}
   caveGenerator: {fileID: 11400000, guid: ed0c9d01dad192f48a36572266caefe7, type: 2}
   biomeGenerator: {fileID: 1957198073}
+  treeGenerator: {fileID: 1957198074}
 --- !u!4 &1957198072
 Transform:
   m_ObjectHideFlags: 0
@@ -896,6 +898,27 @@ MonoBehaviour:
   biomeFrequency: 0.02
   seed: 1337
   Multiplier: 1
+--- !u!114 &1957198074
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1957198070}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6568fcebeb8ee7941a1a3d5ff413dc4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minHeight: 4
+  maxHeight: 7
+  minLeavesRadius: 2
+  maxLeavesRadius: 4
+  leavesDensity: 0.7
+  leavesType: 11
+  trunkType: 10
+  biomeGenerator: {fileID: 1957198073}
+  treeCheckStep: 2
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
