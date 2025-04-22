@@ -5,6 +5,7 @@ public enum BlockType: byte
    Stone = 2,
    Sand = 3,
    Tree = 10,
-   Leaf = 11
+   Leaf = 11,
+   Cactus = 12,
 
 }

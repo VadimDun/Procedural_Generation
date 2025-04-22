@@ -41,8 +41,9 @@ public class TerrainGenerator : ScriptableObject
         var result = new BlockType[ChunkRenderer.CHUNK_WIDTH, ChunkRenderer.CHUNK_HEIGHT, ChunkRenderer.CHUNK_WIDTH];
 
         for (int x = 0; x < ChunkRenderer.CHUNK_WIDTH; ++x){
+            float xWorld = xOffset + x;
+            
             for (int z = 0; z < ChunkRenderer.CHUNK_WIDTH; ++z) {
-                float xWorld = xOffset + x;
                 float zWorld = zOffset + z;
                 float height = GetHeight(xWorld, zWorld);
 

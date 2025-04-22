@@ -1,12 +1,43 @@
 using System;
 using System.Collections.Generic;
+using OpenCover.Framework.Model;
 using UnityEngine;
 
 // On subObject of GameWorld
 public class TerrainDictionary : MonoBehaviour
 {
+    public class GeneratorsByBiom
+    {
+        public TerrainGenerator terrainGenerator;
+        public TreeGenerator treeGenerator;
+        public GeneratorsByBiom(TerrainGenerator terGen, TreeGenerator treeGen)
+        {
+            terrainGenerator = terGen;
+            treeGenerator = treeGen;
+        }
+    }
+
+    [SerializeField] private GameWorld _gameWorld;
+    [SerializeField] private TerrainGenerators _terrainGenerators;
+    [SerializeField] private TreeGenerators _treeGenerators;
+
+    public Dictionary<BiomeType, GeneratorsByBiom> Biomes { get; }
+    void Awake()
+    {
+        Dictionary<BiomeType, GeneratorsByBiom> biomes = new()
+        {
+            [BiomeType.Forest] = new(_terrainGenerators.forest, _treeGenerators.forest),
+            [BiomeType.Flatlands] = new(_terrainGenerators.flatlands, _treeGenerators.flatlands),
+            [BiomeType.Hills] = new(_terrainGenerators.hill, _treeGenerators.hill),
+            [BiomeType.Mountains] = new(_terrainGenerators.mountain, _treeGenerators.mountain),
+            [BiomeType.Desert] = new(_terrainGenerators.desert, _treeGenerators.desert)
+        };
+
+        _gameWorld.SetBiomeGenerators(biomes);
+    }
+
     [Serializable]
-    public class TerrainGenerators
+    private class TerrainGenerators
     {
         public TerrainGenerator forest;
         public TerrainGenerator flatlands;
@@ -14,24 +45,13 @@ public class TerrainDictionary : MonoBehaviour
         public TerrainGenerator mountain;
         public TerrainGenerator desert;
     }
-
-    [SerializeField] private GameWorld _gameWorld;
-
-    [SerializeField] private TerrainGenerators _terrainGenerators;
-
-    public Dictionary<BiomeType, TerrainGenerator> Biomes { get; }
-    void Awake()
+    [Serializable]
+    private class TreeGenerators
     {
-        Dictionary<BiomeType, TerrainGenerator> biomes = new()
-        {
-            [BiomeType.Forest] = _terrainGenerators.forest,
-            [BiomeType.Flatlands] = _terrainGenerators.flatlands,
-            [BiomeType.Hills] = _terrainGenerators.hill,
-            [BiomeType.Mountains] = _terrainGenerators.mountain,
-            [BiomeType.Desert] = _terrainGenerators.desert
-        };
-
-        _gameWorld.BiomeGenerators = biomes;
+        public TreeGenerator forest;
+        public TreeGenerator flatlands;
+        public TreeGenerator hill;
+        public TreeGenerator mountain;
+        public TreeGenerator desert;
     }
-
 }

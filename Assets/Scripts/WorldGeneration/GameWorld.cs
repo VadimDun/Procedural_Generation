@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 // On GameWorld
@@ -9,25 +10,37 @@ public class GameWorld : MonoBehaviour
 {
     public Vector2Int CurrentPlayerChunk{ get; private set; }
 
-    [Header("Radiuses")]
+    [Header("World settings")]
+    [SerializeField] private int _seed = 1337;
     [SerializeField] private int VIEW_RADIUS = 5;
-    [SerializeField] private int DELETING_RADIUS = 5;
 
     [Header("Prefabs and Generators")]
-    public ChunkRenderer ChunkPrefab;
-    public Dictionary<Vector2Int, ChunkData> ChunkDatas = new();
-    public Dictionary<BiomeType, TerrainGenerator> BiomeGenerators;
-    public CaveGenerator caveGenerator;
-    public BiomeGenerator biomeGenerator;
+    [SerializeField] private ChunkRenderer ChunkPrefab;
+    [SerializeField] private CaveGenerator _caveGenerator;
+    [SerializeField] private BiomeGenerator _biomeGenerator;
+
+    public Dictionary<Vector2Int, ChunkData> ChunkDatas { get; private set; }
+    [SerializeField] private Dictionary<BiomeType, TerrainDictionary.GeneratorsByBiom> _biomeGenerators;
 
     private Camera _mainCamera;
 
     void Start()
     {
         _mainCamera = Camera.main;
-        caveGenerator.Init();
-        biomeGenerator.Init();
+        ChunkDatas = new();
+
+        _biomeGenerator.SetSeed(_seed);
+
+        _caveGenerator.Init();
+        _biomeGenerator.Init();
+
         StartCoroutine(Generate(false));
+    }
+
+    public BiomeGenerator GetBiomeGenerator() { return _biomeGenerator; }
+    public void SetBiomeGenerators(Dictionary<BiomeType, TerrainDictionary.GeneratorsByBiom> biomeGenerators)
+    { 
+        _biomeGenerators = biomeGenerators; 
     }
 
     private IEnumerator Generate(bool wait)
@@ -80,7 +93,7 @@ public class GameWorld : MonoBehaviour
         {
             var dist = CurrentPlayerChunk - chunkData.Key;
 
-            if (Math.Abs(dist.x) > DELETING_RADIUS || Math.Abs(dist.y) > DELETING_RADIUS)
+            if (Math.Abs(dist.x) > VIEW_RADIUS || Math.Abs(dist.y) > VIEW_RADIUS)
             {
                 chunksToRemove.Add(chunkData.Key);
             }
@@ -101,16 +114,20 @@ public class GameWorld : MonoBehaviour
 
     private void LoadChunkAt(Vector2Int chunkCoords)
     {
-        BiomeType biome = biomeGenerator.GetBiome(chunkCoords);
-        BlockType surfaceBlocktype = biomeGenerator.GetSurfaceBlock(biome);
-        TerrainGenerator terrainGenerator = BiomeGenerators[biome];
+        BiomeType biome = _biomeGenerator.GetBiome(chunkCoords);
+        BlockType surfaceBlocktype = _biomeGenerator.GetSurfaceBlock(biome);
+        TerrainGenerator terrainGenerator = _biomeGenerators[biome].terrainGenerator;
+        TreeGenerator treeGenerator = _biomeGenerators[biome].treeGenerator;
         terrainGenerator.Init();
+        treeGenerator.SetSeed(_seed);
+        treeGenerator.Init();
 
         float xPosWorld = chunkCoords.x * ChunkRenderer.CHUNK_WIDTH;
         float zPosWorld = chunkCoords.y * ChunkRenderer.CHUNK_WIDTH;
 
         BlockType[,,] blocks = terrainGenerator.GenerateTerrain(xPosWorld, zPosWorld, surfaceBlocktype);
-        caveGenerator.ApplyCaves(blocks, xPosWorld, zPosWorld, terrainGenerator.BaseHeightLevel);
+        _caveGenerator.ApplyCaves(blocks, xPosWorld, zPosWorld, terrainGenerator.BaseHeightLevel);
+        treeGenerator.GenerateTrees(blocks, xPosWorld, zPosWorld);
 
         ChunkData chunkData = new()
         {
@@ -129,7 +146,7 @@ public class GameWorld : MonoBehaviour
     [ContextMenu("Regenerate world")]
     public void Regenerate()
     {
-        caveGenerator.Init();
+        _caveGenerator.Init();
 
         foreach (var chunkData in ChunkDatas)
             Destroy(chunkData.Value.Renderer.gameObject);

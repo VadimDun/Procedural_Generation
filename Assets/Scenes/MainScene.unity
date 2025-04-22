@@ -190,6 +190,12 @@ MonoBehaviour:
     hill: {fileID: 11400000, guid: bd4a7b65e32ee764d9368a36cda28728, type: 2}
     mountain: {fileID: 11400000, guid: 0e215456ac3cfcf43baa61f55c995a86, type: 2}
     desert: {fileID: 11400000, guid: f5dece0ee42941549be1c066f68d1aa2, type: 2}
+  _treeGenerators:
+    forest: {fileID: 11400000, guid: aeae37a27321b9b4ebb8787016c86a14, type: 2}
+    flatlands: {fileID: 11400000, guid: ce0cbba5fb941de4d8c50954b55cdd38, type: 2}
+    hill: {fileID: 11400000, guid: ce0cbba5fb941de4d8c50954b55cdd38, type: 2}
+    mountain: {fileID: 11400000, guid: 32025fdebba8f2340b112b463b2bf8f7, type: 2}
+    desert: {fileID: 11400000, guid: f1f91bbf2afc33644adc04ddbe581985, type: 2}
 --- !u!4 &446290884
 Transform:
   m_ObjectHideFlags: 0
@@ -559,8 +565,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 325, y: -100}
-  m_SizeDelta: {x: 650, y: 200}
+  m_AnchoredPosition: {x: 500, y: -100}
+  m_SizeDelta: {x: 1000, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1599790536
 MonoBehaviour:
@@ -859,11 +865,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60a1c9f0b6bbd8449a6c9c40fe2df1eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _seed: 1337
   VIEW_RADIUS: 8
-  DELETING_RADIUS: 8
   ChunkPrefab: {fileID: 5577456208843452532, guid: 8e758a8bfa8871545be6dfa89a62b5d1, type: 3}
-  caveGenerator: {fileID: 11400000, guid: ed0c9d01dad192f48a36572266caefe7, type: 2}
-  biomeGenerator: {fileID: 1957198073}
+  _caveGenerator: {fileID: 11400000, guid: ed0c9d01dad192f48a36572266caefe7, type: 2}
+  _biomeGenerator: {fileID: 1957198073}
+  _treeGenerator: {fileID: 11400000, guid: ce0cbba5fb941de4d8c50954b55cdd38, type: 2}
 --- !u!4 &1957198072
 Transform:
   m_ObjectHideFlags: 0
@@ -894,7 +901,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   biomeNoiseType: 0
   biomeFrequency: 0.02
-  seed: 1337
   Multiplier: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

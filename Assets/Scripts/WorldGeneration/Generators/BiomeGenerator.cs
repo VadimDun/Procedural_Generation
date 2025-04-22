@@ -6,14 +6,14 @@ public class BiomeGenerator : MonoBehaviour
 {
     public FastNoiseLite.NoiseType biomeNoiseType = FastNoiseLite.NoiseType.OpenSimplex2;
     public float biomeFrequency = 0.05f;
-    public int seed = 1000;
     public float Multiplier = 1f;
+    private int _seed;
 
     public IReadOnlyDictionary<String, float> Thresholds = new Dictionary<String, float>(){
         ["desert"] = -0.7f,
         ["flatlands"] = 0f,
-        ["forest"] = 0.2f,
-        ["hills"] = 0.7f,
+        ["forest"] = 0.3f,
+        ["hills"] = 0.8f,
         ["mountains"] = 1f,
     };
 
@@ -22,14 +22,15 @@ public class BiomeGenerator : MonoBehaviour
 
     public void Init()
     {
-        _biomeNoise = new FastNoiseLite(seed);
+        _biomeNoise = new FastNoiseLite(_seed);
         _biomeNoise.SetNoiseType(biomeNoiseType);
         _biomeNoise.SetFrequency(biomeFrequency);
 
-        _detailNoise = new FastNoiseLite(seed + 1);
+        _detailNoise = new FastNoiseLite(_seed + 1);
         _detailNoise.SetNoiseType(FastNoiseLite.NoiseType.Perlin);
         _detailNoise.SetFrequency(0.1f);
     }
+    public void SetSeed(int seed) { _seed = seed; }
 
     public BiomeType GetBiome(Vector2Int chunkCoords)
     {
