@@ -227,12 +227,13 @@ public class ChunkRenderer : MonoBehaviour
             BlockType.Grass => new Vector2((float)1/192, (float)65/192),
             BlockType.Stone => new Vector2((float)1 / 192, (float)1 / 192),
             BlockType.Sand => new Vector2((float)1 / 3, (float)1 / 192),
-            BlockType.Tree => new Vector2((float)2 / 3, (float)1 / 192),
-            BlockType.Leaf => new Vector2((float)1 / 3, (float)1 / 3),
+            BlockType.Tree => new Vector2((float) 129 / 192, (float)1 / 192),
+            BlockType.Leaf => new Vector2((float)65 / 192, (float)65 / 192),
+            BlockType.Cactus => new Vector2((float)1 / 3, (float)2 / 3),
             _ => new Vector2(0, 0),
         };
 
-        float materialWidth = (float)32 / 192;
+        float materialWidth = (float)60 / 192;
         for (int i = 0; i < 2; ++i)
             for (int j = 0; j < 2; ++j)
                 _uvs.Add(new Vector2(i * materialWidth, j * materialWidth) + uv);

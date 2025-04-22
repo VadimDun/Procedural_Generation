@@ -1,22 +1,23 @@
 using System;
 using UnityEngine;
 
-public class TreeGenerator : MonoBehaviour
+[CreateAssetMenu(menuName = "Tree generator")]
+public class TreeGenerator : ScriptableObject
 {
     [Header("Tree Settings")]
     public int minHeight = 4;
     public int maxHeight = 7;
     public int minLeavesRadius = 2;
     public int maxLeavesRadius = 4;
-    [Range(0, 1)]public float chanceOfAppearance = 0.1f;
-    private readonly BlockType leavesType = BlockType.Leaf;
+    [SerializeField] [Range(0, 1)] private float _chanceOfAppearance = 0.1f;
     private readonly BlockType trunkType = BlockType.Tree;
+    private readonly BlockType leavesType = BlockType.Leaf;
+    private readonly BlockType cactusType = BlockType.Cactus;
 
     private int _seed;
     
     [Header("Biome Settings")]
     public int treeCheckStep = 3;
-
 
     private FastNoiseLite _placementNoise;
     private System.Random _random;
@@ -40,7 +41,7 @@ public class TreeGenerator : MonoBehaviour
             {
                 float worldZ = zOffset + z;
 
-                if (CanPlaceTree(worldX, worldZ))
+                if (ShouldPlaceTree(worldX, worldZ))
                 {
                     TryPlaceTree(terrain, x, z);
                 }
@@ -48,12 +49,12 @@ public class TreeGenerator : MonoBehaviour
         }
     }
 
-    private bool CanPlaceTree(float worldX, float worldZ)
+    private bool ShouldPlaceTree(float worldX, float worldZ)
     {
         float noiseValue = _placementNoise.GetNoise(worldX, worldZ);
 
         float placementChance = 0.5f + noiseValue * 0.5f;
-        return placementChance < chanceOfAppearance;
+        return placementChance < _chanceOfAppearance;
     }
 
     private bool TryPlaceTree(BlockType[,,] terrain, int x, int z)
@@ -95,14 +96,16 @@ public class TreeGenerator : MonoBehaviour
     {
         for (int dy = treeHeight - 2; dy <= treeHeight + 1; ++dy)
         {
+            int checkY = y + dy;
+            
             for (int dx = -leavesRadius; dx <= leavesRadius; ++dx)
             {
+                int checkX = x + dx;
+                
                 for (int dz = -leavesRadius; dz <= leavesRadius; ++dz)
                 {
                     if (dx == 0 && dz == 0) continue; // Пропускаем ствол
 
-                    int checkX = x + dx;
-                    int checkY = y + dy;
                     int checkZ = z + dz;
 
                     if (checkX >= 0 && checkX < ChunkRenderer.CHUNK_WIDTH &&
@@ -121,15 +124,24 @@ public class TreeGenerator : MonoBehaviour
 
     private void GenerateTree(BlockType[,,] terrain, int x, int y, int z, int treeHeight, int leavesRadius)
     {
+        BlockType trunk;
+        if (terrain[x, y - 1, z] == BlockType.Sand)
+        {
+            trunk = cactusType;
+        }
+        else 
+        {
+            trunk = trunkType;
+            GenerateLeavesLayer(terrain, x, y + treeHeight, z, leavesRadius - 1);
+            GenerateLeavesLayer(terrain, x, y + treeHeight - 1, z, leavesRadius);
+            GenerateLeavesLayer(terrain, x, y + treeHeight - 2, z, leavesRadius);
+
+            if (treeHeight > 5)
+                GenerateLeavesLayer(terrain, x, y + treeHeight - 3, z, leavesRadius - 1);
+        }
+
         for (int dy = 0; dy < treeHeight; ++dy)
-            terrain[x, y + dy, z] = trunkType;
-
-        GenerateLeavesLayer(terrain, x, y + treeHeight, z, leavesRadius - 1);
-        GenerateLeavesLayer(terrain, x, y + treeHeight - 1, z, leavesRadius);
-        GenerateLeavesLayer(terrain, x, y + treeHeight - 2, z, leavesRadius);
-
-        if (treeHeight > 5)
-            GenerateLeavesLayer(terrain, x, y + treeHeight - 3, z, leavesRadius - 1);
+            terrain[x, y + dy, z] = trunk;
     }
 
     private void GenerateLeavesLayer(BlockType[,,] terrain, int centerX, int centerY, int centerZ, int radius)
@@ -155,4 +167,5 @@ public class TreeGenerator : MonoBehaviour
             }
         }
     }
+
 }

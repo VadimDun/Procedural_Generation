@@ -11,7 +11,7 @@ public class InfoChanger : MonoBehaviour
     void Update()
     {
         var position = _world.CurrentPlayerChunk;
-        var biome = _world.biomeGenerator.GetBiome(position);
+        var biome = _world.GetBiomeGenerator().GetBiome(position);
 
         _text.text = string.Format("Position: {0}\nBiome: {1}", position, biome);
     }
