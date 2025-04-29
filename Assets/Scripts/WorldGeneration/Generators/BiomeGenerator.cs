@@ -4,52 +4,77 @@ using UnityEngine;
 
 public class BiomeGenerator : MonoBehaviour
 {
-    public FastNoiseLite.NoiseType biomeNoiseType = FastNoiseLite.NoiseType.OpenSimplex2;
-    public float biomeFrequency = 0.05f;
-    public float Multiplier = 1f;
-    private int _seed;
+    [Header("Height Map Settings")]
+    public FastNoiseLite.NoiseType heightNoiseType = FastNoiseLite.NoiseType.OpenSimplex2;
+    public float heightFrequency = 0.05f;
+    [Range(0, 1)] public float heightAmplitude = 1f;
+    public float heightMultiplier = 1f;
 
-    public IReadOnlyDictionary<String, float> Thresholds = new Dictionary<String, float>(){
-        ["desert"] = -0.7f,
+    [Header("Temperature Map Settings")]
+    public FastNoiseLite.NoiseType temperatureNoiseType = FastNoiseLite.NoiseType.OpenSimplex2;
+    public float temperatureFrequency = 0.03f;
+    public float temperatureMultiplier = 1f;
+
+    private FastNoiseLite _heightNoise;
+    private FastNoiseLite _temperatureNoise;
+
+    private int _seed;
+    public IReadOnlyDictionary<String, float> HeightThresholds = new Dictionary<String, float>(){
         ["flatlands"] = 0f,
-        ["forest"] = 0.3f,
-        ["hills"] = 0.8f,
+        ["hills"] = 0.6f,
         ["mountains"] = 1f,
     };
 
-    private FastNoiseLite _biomeNoise;
-    private FastNoiseLite _detailNoise;
-
-    public void Init()
+    public IReadOnlyDictionary<String, float> TemperatureThresholds = new Dictionary<String, float>()
     {
-        _biomeNoise = new FastNoiseLite(_seed);
-        _biomeNoise.SetNoiseType(biomeNoiseType);
-        _biomeNoise.SetFrequency(biomeFrequency);
+        ["ice"] = -0.6f,
+        ["temperate"] = 0.6f,
+        ["desert"] = 1f,
+    };
 
-        _detailNoise = new FastNoiseLite(_seed + 1);
-        _detailNoise.SetNoiseType(FastNoiseLite.NoiseType.Perlin);
-        _detailNoise.SetFrequency(0.1f);
-    }
-    public void SetSeed(int seed) { _seed = seed; }
-
-    public BiomeType GetBiome(Vector2Int chunkCoords)
+    public void Init(int seed)
     {
-        float biomeValue = _biomeNoise.GetNoise(Multiplier * chunkCoords.x, Multiplier * chunkCoords.y);
+        _seed = seed;
 
-        if (biomeValue < Thresholds["desert"]) return BiomeType.Desert;
-        if (biomeValue < Thresholds["flatlands"]) return BiomeType.Flatlands;
-        if (biomeValue < Thresholds["forest"]) return BiomeType.Forest;
-        if (biomeValue < Thresholds["hills"]) return BiomeType.Hills;
-        return BiomeType.Mountains;
+        _heightNoise = new FastNoiseLite(_seed);
+        _heightNoise.SetNoiseType(heightNoiseType);
+        _heightNoise.SetFrequency(heightFrequency);
+
+        _temperatureNoise = new FastNoiseLite(_seed + 1);
+        _temperatureNoise.SetNoiseType(temperatureNoiseType);
+        _temperatureNoise.SetFrequency(temperatureFrequency);
     }
 
-    public BlockType GetSurfaceBlock(BiomeType biome)
+    public Biome GetBiome(Vector2Int chunkCoords)
     {
-        return biome switch
+        Biome biome= new();
+
+        float heightValue = _heightNoise.GetNoise(heightMultiplier * chunkCoords.x, heightMultiplier * chunkCoords.y);
+        
+        if (heightValue < HeightThresholds["flatlands"]) biome.Height = BiomeType.Flatlands;
+        else if (heightValue < HeightThresholds["hills"]) biome.Height = BiomeType.Hills;
+        else biome.Height = BiomeType.Mountains;
+
+        float temperatureValue = _temperatureNoise.GetNoise(
+            temperatureMultiplier * chunkCoords.x, temperatureMultiplier * chunkCoords.y
+            );
+        
+        if (temperatureValue < TemperatureThresholds["ice"]) biome.Temperature = Temperature.Ice;
+        else if(temperatureValue < TemperatureThresholds["temperate"]) biome.Temperature = Temperature.Temperate;
+        else biome.Temperature = Temperature.Desert;
+
+        biome.SurfaceBlock = GetSurfaceBlock(biome);
+
+        return biome;
+    }
+
+    private BlockType GetSurfaceBlock(Biome biome)
+    {
+        return biome.Temperature switch
         {
-            BiomeType.Mountains => BlockType.Stone,
-            BiomeType.Desert => BlockType.Sand,
-            _ => BlockType.Grass,
+            Temperature.Desert => BlockType.Sand,
+            Temperature.Ice => BlockType.Ice,
+            _ => biome.Height == BiomeType.Mountains ? BlockType.Stone : BlockType.Grass,
         };
     }
 }
@@ -57,8 +82,14 @@ public class BiomeGenerator : MonoBehaviour
 public enum BiomeType
 {
     Flatlands,
-    Forest,
     Hills,
     Mountains,
+}
+
+public enum Temperature
+{
+    Ice,
+    Forest,
+    Temperate,
     Desert,
 }

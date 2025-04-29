@@ -9,6 +9,7 @@ using UnityEngine;
 public class GameWorld : MonoBehaviour
 {
     public Vector2Int CurrentPlayerChunk{ get; private set; }
+    public Biome CurrentBiome { get; private set; }
 
     [Header("World settings")]
     [SerializeField] private int _seed = 1337;
@@ -21,6 +22,7 @@ public class GameWorld : MonoBehaviour
 
     public Dictionary<Vector2Int, ChunkData> ChunkDatas { get; private set; }
     [SerializeField] private Dictionary<BiomeType, TerrainDictionary.GeneratorsByBiom> _biomeGenerators;
+    [SerializeField] private TerrainDictionary _terrainDictionary;
 
     private Camera _mainCamera;
 
@@ -29,18 +31,12 @@ public class GameWorld : MonoBehaviour
         _mainCamera = Camera.main;
         ChunkDatas = new();
 
-        _biomeGenerator.SetSeed(_seed);
-
         _caveGenerator.Init();
-        _biomeGenerator.Init();
+        _biomeGenerator.Init(_seed);
+
+        CurrentBiome = _biomeGenerator.GetBiome(CurrentPlayerChunk);
 
         StartCoroutine(Generate(false));
-    }
-
-    public BiomeGenerator GetBiomeGenerator() { return _biomeGenerator; }
-    public void SetBiomeGenerators(Dictionary<BiomeType, TerrainDictionary.GeneratorsByBiom> biomeGenerators)
-    { 
-        _biomeGenerators = biomeGenerators; 
     }
 
     private IEnumerator Generate(bool wait)
@@ -114,10 +110,11 @@ public class GameWorld : MonoBehaviour
 
     private void LoadChunkAt(Vector2Int chunkCoords)
     {
-        BiomeType biome = _biomeGenerator.GetBiome(chunkCoords);
-        BlockType surfaceBlocktype = _biomeGenerator.GetSurfaceBlock(biome);
-        TerrainGenerator terrainGenerator = _biomeGenerators[biome].terrainGenerator;
-        TreeGenerator treeGenerator = _biomeGenerators[biome].treeGenerator;
+        Biome biome = _biomeGenerator.GetBiome(chunkCoords);
+        BlockType surfaceBlocktype = biome.SurfaceBlock;
+        TerrainGenerator terrainGenerator = _terrainDictionary.GetTerrainGeneratorByBiom(biome);
+        TreeGenerator treeGenerator = _terrainDictionary.GetTreeGeneratorByBiom(biome);
+
         terrainGenerator.Init();
         treeGenerator.SetSeed(_seed);
         treeGenerator.Init();
@@ -163,6 +160,7 @@ public class GameWorld : MonoBehaviour
         if (playerChunk != CurrentPlayerChunk)
         {
             CurrentPlayerChunk = playerChunk;
+            CurrentBiome = _biomeGenerator.GetBiome(CurrentPlayerChunk);
             StartCoroutine(Generate(true));
         }
     }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using OpenCover.Framework.Model;
 using UnityEngine;
@@ -10,11 +11,6 @@ public class TerrainDictionary : MonoBehaviour
     {
         public TerrainGenerator terrainGenerator;
         public TreeGenerator treeGenerator;
-        public GeneratorsByBiom(TerrainGenerator terGen, TreeGenerator treeGen)
-        {
-            terrainGenerator = terGen;
-            treeGenerator = treeGen;
-        }
     }
 
     [SerializeField] private GameWorld _gameWorld;
@@ -22,28 +18,44 @@ public class TerrainDictionary : MonoBehaviour
     [SerializeField] private TreeGenerators _treeGenerators;
 
     public Dictionary<BiomeType, GeneratorsByBiom> Biomes { get; }
-    void Awake()
+
+    public TerrainGenerator GetTerrainGeneratorByBiom(Biome biome)
     {
-        Dictionary<BiomeType, GeneratorsByBiom> biomes = new()
+        TerrainGenerator terrainGenerator = biome.Height switch
         {
-            [BiomeType.Forest] = new(_terrainGenerators.forest, _treeGenerators.forest),
-            [BiomeType.Flatlands] = new(_terrainGenerators.flatlands, _treeGenerators.flatlands),
-            [BiomeType.Hills] = new(_terrainGenerators.hill, _treeGenerators.hill),
-            [BiomeType.Mountains] = new(_terrainGenerators.mountain, _treeGenerators.mountain),
-            [BiomeType.Desert] = new(_terrainGenerators.desert, _treeGenerators.desert)
+            BiomeType.Flatlands => _terrainGenerators.flatlands,
+            BiomeType.Hills => _terrainGenerators.hill,
+            _ => _terrainGenerators.mountain,
         };
 
-        _gameWorld.SetBiomeGenerators(biomes);
+        return terrainGenerator;
+    }
+
+    public TreeGenerator GetTreeGeneratorByBiom(Biome biome)
+    {
+        TreeGenerator treeGenerator;
+        switch (biome.Temperature)
+        {
+            case Temperature.Desert:
+                treeGenerator = _treeGenerators.desert;
+                break;
+            case Temperature.Ice:
+                treeGenerator = _treeGenerators.mountain;
+                break;
+            default:
+                treeGenerator = _treeGenerators.hill;
+                break;
+        }
+
+        return treeGenerator;
     }
 
     [Serializable]
     private class TerrainGenerators
     {
-        public TerrainGenerator forest;
         public TerrainGenerator flatlands;
         public TerrainGenerator hill;
         public TerrainGenerator mountain;
-        public TerrainGenerator desert;
     }
     [Serializable]
     private class TreeGenerators
