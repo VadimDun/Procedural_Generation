@@ -24,7 +24,9 @@ public class TerrainDictionary : MonoBehaviour
         TerrainGenerator terrainGenerator = biome.Height switch
         {
             BiomeType.Flatlands => _terrainGenerators.flatlands,
+            BiomeType.FlatlandsHills => _terrainGenerators.flatlands,
             BiomeType.Hills => _terrainGenerators.hill,
+            BiomeType.HillsMountains => _terrainGenerators.hill,
             _ => _terrainGenerators.mountain,
         };
 
@@ -39,11 +41,14 @@ public class TerrainDictionary : MonoBehaviour
             case Temperature.Desert:
                 treeGenerator = _treeGenerators.desert;
                 break;
-            case Temperature.Ice:
-                treeGenerator = _treeGenerators.mountain;
+            case Temperature.Temperate:
+                treeGenerator = (biome.Height == BiomeType.Flatlands) ? _treeGenerators.flatlands : _treeGenerators.hill;
+                break;
+            case Temperature.Forest:
+                treeGenerator = _treeGenerators.forest;
                 break;
             default:
-                treeGenerator = _treeGenerators.hill;
+                treeGenerator = _treeGenerators.mountain;
                 break;
         }
 
