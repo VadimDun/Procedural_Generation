@@ -10,9 +10,8 @@ public class TreeGenerator : ScriptableObject
     public int minLeavesRadius = 2;
     public int maxLeavesRadius = 4;
     [SerializeField] [Range(0, 1)] private float _chanceOfAppearance = 0.1f;
-    private readonly BlockType trunkType = BlockType.Tree;
+    public BlockType trunkType = BlockType.Tree;
     private readonly BlockType leavesType = BlockType.Leaf;
-    private readonly BlockType cactusType = BlockType.Cactus;
 
     private int _seed;
     
@@ -124,14 +123,8 @@ public class TreeGenerator : ScriptableObject
 
     private void GenerateTree(BlockType[,,] terrain, int x, int y, int z, int treeHeight, int leavesRadius)
     {
-        BlockType trunk;
-        if (terrain[x, y - 1, z] == BlockType.Sand)
+        if (trunkType == BlockType.Tree)
         {
-            trunk = cactusType;
-        }
-        else 
-        {
-            trunk = trunkType;
             GenerateLeavesLayer(terrain, x, y + treeHeight, z, leavesRadius - 1);
             GenerateLeavesLayer(terrain, x, y + treeHeight - 1, z, leavesRadius);
             GenerateLeavesLayer(terrain, x, y + treeHeight - 2, z, leavesRadius);
@@ -141,7 +134,7 @@ public class TreeGenerator : ScriptableObject
         }
 
         for (int dy = 0; dy < treeHeight; ++dy)
-            terrain[x, y + dy, z] = trunk;
+            terrain[x, y + dy, z] = trunkType;
     }
 
     private void GenerateLeavesLayer(BlockType[,,] terrain, int centerX, int centerY, int centerZ, int radius)
