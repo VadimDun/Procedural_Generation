@@ -19,18 +19,23 @@ public class TerrainGenerator : ScriptableObject
     
     private FastNoiseLite[] _octaveNoises;
     private FastNoiseLite _warpNoise;
+    private int _seed;
 
 
-    public void Init()
+
+    public void Init(int seed)
     {
+        _seed = seed;
+
         _octaveNoises = new FastNoiseLite[Octaves.Length];
-        for (int i = 0; i < Octaves.Length; ++i){
-            _octaveNoises[i] = new();
+        for (int i = 0; i < Octaves.Length; ++i)
+        {
+            _octaveNoises[i] = new(_seed);
             _octaveNoises[i].SetNoiseType(Octaves[i].NoiseType);
             _octaveNoises[i].SetFrequency(Octaves[i].Frequency);
         }
 
-        _warpNoise = new();
+        _warpNoise = new(_seed);
         _warpNoise.SetNoiseType(DomainWarp.NoiseType);
         _warpNoise.SetFrequency(DomainWarp.Frequency);
         _warpNoise.SetDomainWarpAmp(DomainWarp.Amplitude);

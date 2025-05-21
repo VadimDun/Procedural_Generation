@@ -17,4 +17,5 @@ MonoBehaviour:
   minLeavesRadius: 0
   maxLeavesRadius: 0
   _chanceOfAppearance: 0.1
+  trunkType: 12
   treeCheckStep: 3

@@ -17,4 +17,4 @@ MonoBehaviour:
   minLeavesRadius: 2
   maxLeavesRadius: 5
   _chanceOfAppearance: 0.2
-  treeCheckStep: 3
+  treeCheckStep: 2
