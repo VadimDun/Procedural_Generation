@@ -21,15 +21,15 @@ public class TreeGenerator : ScriptableObject
     private FastNoiseLite _placementNoise;
     private System.Random _random;
 
-    public void Init()
+    public void Init(int seed)
     {
+        _seed = seed;
         _placementNoise = new FastNoiseLite(_seed);
         _placementNoise.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2);
         _placementNoise.SetFrequency(0.1f);
         _random = new System.Random(_seed);
     }
 
-    public void SetSeed(int seed){ _seed = seed; }
 
     public void GenerateTrees(BlockType[,,] terrain, float xOffset, float zOffset)
     {

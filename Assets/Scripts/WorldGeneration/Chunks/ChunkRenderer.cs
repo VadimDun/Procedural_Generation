@@ -234,7 +234,7 @@ public class ChunkRenderer : MonoBehaviour
             _ => new Vector2(0, 0),
         };
 
-        float materialWidth = (float)60 / 192;
+        float materialWidth = (float)30 / 192;
         for (int i = 0; i < 2; ++i)
             for (int j = 0; j < 2; ++j)
                 _uvs.Add(new Vector2(i * materialWidth, j * materialWidth) + uv);

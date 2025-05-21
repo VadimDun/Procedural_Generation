@@ -115,9 +115,8 @@ public class GameWorld : MonoBehaviour
         TerrainGenerator terrainGenerator = _terrainDictionary.GetTerrainGeneratorByBiom(biome);
         TreeGenerator treeGenerator = _terrainDictionary.GetTreeGeneratorByBiom(biome);
 
-        terrainGenerator.Init();
-        treeGenerator.SetSeed(_seed);
-        treeGenerator.Init();
+        terrainGenerator.Init(_seed);
+        treeGenerator.Init(_seed);
 
         float xPosWorld = chunkCoords.x * ChunkRenderer.CHUNK_WIDTH;
         float zPosWorld = chunkCoords.y * ChunkRenderer.CHUNK_WIDTH;
